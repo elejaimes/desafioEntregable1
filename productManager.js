@@ -10,11 +10,14 @@ class ProductManager {
 
   async init() {
     try {
+      console.log("Eliminando el archivo...");
       await fsPromises.unlink(this.path);
+      console.log("Archivo eliminado con éxito.");
     } catch (error) {
       if (error.code !== "ENOENT") {
         throw error;
       }
+      console.log("No se encontró el archivo para eliminar.");
     }
 
     this.products = [];
@@ -30,11 +33,14 @@ class ProductManager {
 
   async readProducts() {
     try {
+      console.log("Leyendo productos del archivo...");
       const data = await fsPromises.readFile(this.path, "utf-8");
       this.products = data ? JSON.parse(data) : [];
+      console.log("Productos leídos con éxito.");
     } catch (error) {
       if (error.code === "ENOENT") {
         this.products = [];
+        console.log("No se encontró el archivo de productos.");
       } else {
         throw error;
       }
@@ -42,14 +48,17 @@ class ProductManager {
   }
 
   async writeProducts() {
+    console.log("Escribiendo productos en el archivo...");
     await fsPromises.writeFile(
       this.path,
       JSON.stringify(this.products, null, 2)
     );
+    console.log("Productos escritos con éxito en el archivo.");
   }
 
   async addProduct(productData) {
     try {
+      console.log("Agregando un producto...");
       if (
         !productData.title ||
         !productData.description ||
@@ -71,6 +80,7 @@ class ProductManager {
       };
       this.products.push(product);
       await this.appendProduct(product);
+      console.log("Producto agregado con éxito.");
       return product;
     } catch (error) {
       throw new Error("Error adding product: " + error.message);
@@ -93,6 +103,7 @@ class ProductManager {
 
   async deleteProduct(id) {
     try {
+      console.log("Eliminando un producto...");
       const productIndex = this.products.findIndex(
         (product) => product.id === id
       );
@@ -101,6 +112,7 @@ class ProductManager {
       }
       this.products.splice(productIndex, 1);
       await this.writeProducts();
+      console.log("Producto eliminado con éxito.");
     } catch (error) {
       throw new Error("Error deleting product: " + error.message);
     }
@@ -108,8 +120,10 @@ class ProductManager {
 
   async appendProduct(product) {
     try {
-      const productJSON = JSON.stringify(product) + "\n"; // Agrega un salto de línea
+      console.log("Agregando un producto al archivo...");
+      const productJSON = JSON.stringify(product) + "\n";
       await fsPromises.appendFile(this.path, productJSON);
+      console.log("Producto agregado al archivo con éxito.");
     } catch (error) {
       throw new Error("Error appending product: " + error.message);
     }
@@ -162,7 +176,7 @@ const productsToAdd = [
 async function main() {
   const manager = new ProductManager({ path: "products.json" });
 
-  await manager.init(); // Llama a init para eliminar y recrear el archivo
+  await manager.init();
 
   console.log("Todos los productos:");
   console.log(await manager.getProducts());
