@@ -1,4 +1,5 @@
-const { promises: fs } = require("fs");
+const fs = require("fs");
+const { promises: fsPromises } = fs;
 
 class ProductManager {
   constructor({ path }) {
@@ -8,12 +9,28 @@ class ProductManager {
   }
 
   async init() {
-    await this.readProducts();
+    try {
+      await fsPromises.unlink(this.path);
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
+
+    this.products = [];
+
+    for (const productData of productsToAdd) {
+      const product = await this.addProduct(productData);
+      if (product) {
+        this.products.push(product);
+      }
+    }
+    await this.writeProducts();
   }
 
   async readProducts() {
     try {
-      const data = await fs.readFile(this.path, "utf-8");
+      const data = await fsPromises.readFile(this.path, "utf-8");
       this.products = data ? JSON.parse(data) : [];
     } catch (error) {
       if (error.code === "ENOENT") {
@@ -25,7 +42,10 @@ class ProductManager {
   }
 
   async writeProducts() {
-    await fs.writeFile(this.path, JSON.stringify(this.products, null, 2));
+    await fsPromises.writeFile(
+      this.path,
+      JSON.stringify(this.products, null, 2)
+    );
   }
 
   async addProduct(productData) {
@@ -88,7 +108,8 @@ class ProductManager {
 
   async appendProduct(product) {
     try {
-      await fs.appendFile(this.path, JSON.stringify(product) + "\n");
+      const productJSON = JSON.stringify(product) + "\n"; // Agrega un salto de línea
+      await fsPromises.appendFile(this.path, productJSON);
     } catch (error) {
       throw new Error("Error appending product: " + error.message);
     }
@@ -141,21 +162,9 @@ const productsToAdd = [
 async function main() {
   const manager = new ProductManager({ path: "products.json" });
 
-  await manager.init();
-
-  for (const productData of productsToAdd) {
-    await manager.addProduct(productData);
-  }
+  await manager.init(); // Llama a init para eliminar y recrear el archivo
 
   console.log("Todos los productos:");
-  console.log(await manager.getProducts());
-
-  console.log("Producto con ID 2:");
-  console.log(await manager.getProductById(2));
-
-  console.log("Eliminando producto con ID 1:");
-  await manager.deleteProduct(1);
-  console.log("Productos después de eliminar:");
   console.log(await manager.getProducts());
 }
 
