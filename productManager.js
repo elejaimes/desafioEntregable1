@@ -8,46 +8,53 @@ class ProductManager {
   }
 
   async init() {
-    await this.writeProducts();
+    await this.readProducts();
   }
 
   async readProducts() {
-    const jsonProducts = await fs.readFile(this.path, "utf-8");
-    this.products = JSON.parse(jsonProducts);
+    try {
+      const data = await fs.readFile(this.path, "utf-8");
+      this.products = data ? JSON.parse(data) : [];
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        this.products = [];
+      } else {
+        throw error;
+      }
+    }
   }
 
   async writeProducts() {
-    await fs.writeFile(this.path, JSON.stringify(this.products));
+    await fs.writeFile(this.path, JSON.stringify(this.products, null, 2));
   }
 
-  async addProduct(title, description, price, thumbnail, code, stock) {
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !thumbnail ||
-      !code ||
-      stock === undefined
-    ) {
-      console.error("Todos los campos son obligatorios.");
-      return;
+  async addProduct(productData) {
+    try {
+      if (
+        !productData.title ||
+        !productData.description ||
+        !productData.price ||
+        !productData.thumbnail ||
+        !productData.code ||
+        productData.stock === undefined
+      ) {
+        console.error("Todos los campos son obligatorios.");
+        return;
+      }
+      if (this.products.some((product) => product.code === productData.code)) {
+        console.error("El código ya existe. Debe ser único.");
+        return;
+      }
+      const product = {
+        id: this.productIdCounter++,
+        ...productData,
+      };
+      this.products.push(product);
+      await this.appendProduct(product);
+      return product;
+    } catch (error) {
+      throw new Error("Error adding product: " + error.message);
     }
-    if (this.products.some((product) => product.code === code)) {
-      console.error("El código ya existe. Debe ser único.");
-      return;
-    }
-    const product = {
-      id: this.productIdCounter++,
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-    };
-    await this.readProducts();
-    this.products.push(product);
-    await this.writeProducts();
   }
 
   async getProducts() {
@@ -55,12 +62,36 @@ class ProductManager {
     return this.products;
   }
 
-  getProductById(id) {
+  async getProductById(id) {
+    await this.readProducts();
     const product = this.products.find((product) => product.id === id);
     if (!product) {
       return console.error("Producto no encontrado");
     }
     return product;
+  }
+
+  async deleteProduct(id) {
+    try {
+      const productIndex = this.products.findIndex(
+        (product) => product.id === id
+      );
+      if (productIndex === -1) {
+        return console.error("Producto no encontrado");
+      }
+      this.products.splice(productIndex, 1);
+      await this.writeProducts();
+    } catch (error) {
+      throw new Error("Error deleting product: " + error.message);
+    }
+  }
+
+  async appendProduct(product) {
+    try {
+      await fs.appendFile(this.path, JSON.stringify(product) + "\n");
+    } catch (error) {
+      throw new Error("Error appending product: " + error.message);
+    }
   }
 }
 
@@ -113,17 +144,18 @@ async function main() {
   await manager.init();
 
   for (const productData of productsToAdd) {
-    await manager.addProduct(
-      productData.title,
-      productData.description,
-      productData.price,
-      productData.thumbnail,
-      productData.code,
-      productData.stock
-    );
+    await manager.addProduct(productData);
   }
 
   console.log("Todos los productos:");
+  console.log(await manager.getProducts());
+
+  console.log("Producto con ID 2:");
+  console.log(await manager.getProductById(2));
+
+  console.log("Eliminando producto con ID 1:");
+  await manager.deleteProduct(1);
+  console.log("Productos después de eliminar:");
   console.log(await manager.getProducts());
 }
 
