@@ -1,10 +1,26 @@
+const { promises: fs } = require("fs");
+
 class ProductManager {
-  constructor() {
+  constructor({ path }) {
+    this.path = path;
     this.products = [];
     this.productIdCounter = 1;
   }
 
-  addProduct(title, description, price, thumbnail, code, stock) {
+  async init() {
+    await this.writeProducts();
+  }
+
+  async readProducts() {
+    const jsonProducts = await fs.readFile(this.path, "utf-8");
+    this.products = JSON.parse(jsonProducts);
+  }
+
+  async writeProducts() {
+    await fs.writeFile(this.path, JSON.stringify(this.products));
+  }
+
+  async addProduct(title, description, price, thumbnail, code, stock) {
     if (
       !title ||
       !description ||
@@ -29,18 +45,20 @@ class ProductManager {
       code,
       stock,
     };
-
+    await this.readProducts();
     this.products.push(product);
+    await this.writeProducts();
   }
 
-  getProducts() {
+  async getProducts() {
+    await this.readProducts();
     return this.products;
   }
 
   getProductById(id) {
     const product = this.products.find((product) => product.id === id);
     if (!product) {
-      console.error("Producto no encontrado");
+      return console.error("Producto no encontrado");
     }
     return product;
   }
@@ -89,18 +107,24 @@ const productsToAdd = [
   },
 ];
 
-const manager = new ProductManager();
+async function main() {
+  const manager = new ProductManager({ path: "products.json" });
 
-for (const productData of productsToAdd) {
-  manager.addProduct(
-    productData.title,
-    productData.description,
-    productData.price,
-    productData.thumbnail,
-    productData.code,
-    productData.stock
-  );
+  await manager.init();
+
+  for (const productData of productsToAdd) {
+    await manager.addProduct(
+      productData.title,
+      productData.description,
+      productData.price,
+      productData.thumbnail,
+      productData.code,
+      productData.stock
+    );
+  }
+
+  console.log("Todos los productos:");
+  console.log(await manager.getProducts());
 }
 
-console.log("Todos los productos:");
-console.log(manager.getProducts());
+main();
