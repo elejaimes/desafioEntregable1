@@ -1,12 +1,18 @@
 {
+  "type": "module",
   "name": "entregablesbackend",
   "version": "1.0.0",
-  "description": "",
-  "main": "ProductManager.js",
+  "description": "Clases con ECMAScript y ECMAScript avanzado.",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/node.js",
+    "dev": "nodemon -e 'js,html' src/app.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "moment": "^2.29.4"
+  }
 }

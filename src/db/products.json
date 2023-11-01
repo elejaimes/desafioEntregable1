@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "Tarta de Manzana",
+    "description": "Una deliciosa tarta de manzana casera.",
+    "price": 15.99,
+    "thumbnail": "tarta_manzana.jpg",
+    "code": "APPLE123",
+    "stock": 20
+  },
+  {
+    "id": 2,
+    "title": "Helado de Chocolate",
+    "description": "Helado cremoso de chocolate belga.",
+    "price": 7.99,
+    "thumbnail": "helado_chocolate.jpg",
+    "code": "CHOCOICE",
+    "stock": 25
+  },
+  {
+    "id": 3,
+    "title": "Cupcakes de Vainilla",
+    "description": "Cupcakes de vainilla con frosting de crema.",
+    "price": 12.99,
+    "thumbnail": "cupcakes_vainilla.jpg",
+    "code": "CUPCAKES1",
+    "stock": 15
+  },
+  {
+    "id": 4,
+    "title": "Dona de Fresa",
+    "description": "Dona esponjosa de fresa con glaseado.",
+    "price": 2.99,
+    "thumbnail": "dona_fresa.jpg",
+    "code": "STRAWDON",
+    "stock": 30
+  },
+  {
+    "id": 5,
+    "title": "Tarta de Chocolate",
+    "description": "Tarta de chocolate oscuro con frutos secos.",
+    "price": 18.99,
+    "thumbnail": "tarta_chocolate.jpg",
+    "code": "CHOCOTART",
+    "stock": 10
+  },
+  {
+    "id": 6,
+    "title": "Cookies con Chispas de Chocolate",
+    "description": "Galletas recién horneadas con chispas de chocolate.",
+    "price": 8.99,
+    "thumbnail": "cookies_chocolate.jpg",
+    "code": "COOKIE321",
+    "stock": 40
+  },
+  {
+    "id": 7,
+    "title": "Cheesecake de Frutos Rojos",
+    "description": "Cheesecake cremoso con salsa de frutos rojos.",
+    "price": 21.99,
+    "thumbnail": "cheesecake_frutos.jpg",
+    "code": "BERRYCHEE",
+    "stock": 12
+  },
+  {
+    "id": 8,
+    "title": "Caramelos de Menta",
+    "description": "Caramelos suaves de menta cubiertos de chocolate.",
+    "price": 5.99,
+    "thumbnail": "caramelos_menta.jpg",
+    "code": "MINTCANDY",
+    "stock": 50
+  },
+  {
+    "id": 9,
+    "title": "Tiramisú Italiano",
+    "description": "Tiramisú clásico con café y cacao en polvo.",
+    "price": 16.99,
+    "thumbnail": "tiramisu.jpg",
+    "code": "TIRAMISU1",
+    "stock": 18
+  },
+  {
+    "id": 10,
+    "title": "Rollitos de Canela",
+    "description": "Rollitos de canela recién horneados con glaseado de vainilla.",
+    "price": 10.99,
+    "thumbnail": "cinnamon_rolls.jpg",
+    "code": "CINNAMON1",
+    "stock": 22
+  }
+]
